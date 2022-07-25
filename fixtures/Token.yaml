@@ -1,0 +1,9 @@
+App\Entity\Token:
+    token0:
+        name: 'Bitcoin'
+        createdAt: '<date(2009-01-01)>'
+        price: '21395.67'
+        rank: '1'
+        maxSupply: '21000000'
+        circulatingSupply: '19000000'
+        blockchainType: 'Segwit'

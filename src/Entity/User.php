@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -36,6 +38,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: TokenUser::class)]
+    private Collection $userTokenUsers;
+
+    public function __construct()
+    {
+        $this->userTokenUsers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -139,6 +149,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TokenUser>
+     */
+    public function getUserTokenUsers(): Collection
+    {
+        return $this->userTokenUsers;
+    }
+
+    public function addUserTokenUser(TokenUser $userTokenUser): self
+    {
+        if (!$this->userTokenUsers->contains($userTokenUser)) {
+            $this->userTokenUsers[] = $userTokenUser;
+            $userTokenUser->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserTokenUser(TokenUser $userTokenUser): self
+    {
+        if ($this->userTokenUsers->removeElement($userTokenUser)) {
+            // set the owning side to null (unless already changed)
+            if ($userTokenUser->getUser() === $this) {
+                $userTokenUser->setUser(null);
+            }
+        }
 
         return $this;
     }

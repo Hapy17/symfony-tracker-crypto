@@ -26,6 +26,18 @@ class Transaction
     #[ORM\Column]
     private ?int $status = null;
 
+    #[ORM\ManyToOne(inversedBy: 'recieverTransactions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?TokenUser $reciever = null;
+
+    #[ORM\ManyToOne(inversedBy: 'senderTransactions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?TokenUser $sender = null;
+
+    #[ORM\ManyToOne(inversedBy: 'tokenTransactions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Token $token = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +87,42 @@ class Transaction
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getReciever(): ?TokenUser
+    {
+        return $this->reciever;
+    }
+
+    public function setReciever(?TokenUser $reciever): self
+    {
+        $this->reciever = $reciever;
+
+        return $this;
+    }
+
+    public function getSender(): ?TokenUser
+    {
+        return $this->sender;
+    }
+
+    public function setSender(?TokenUser $sender): self
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    public function getToken(): ?Token
+    {
+        return $this->token;
+    }
+
+    public function setToken(?Token $token): self
+    {
+        $this->token = $token;
 
         return $this;
     }

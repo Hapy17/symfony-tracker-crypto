@@ -2,11 +2,16 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\TokenRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TokenRepository::class)]
+#[ApiResource]
+
 class Token
 {
     #[ORM\Id]
@@ -34,6 +39,18 @@ class Token
 
     #[ORM\Column(length: 255)]
     private ?string $blockchainType = null;
+
+    #[ORM\OneToMany(mappedBy: 'token', targetEntity: Transaction::class)]
+    private Collection $tokenTransactions;
+
+    #[ORM\ManyToMany(targetEntity: TokenUser::class, mappedBy: 'token')]
+    private Collection $tokenUsers;
+
+    public function __construct()
+    {
+        $this->tokenTransactions = new ArrayCollection();
+        $this->tokenUsers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -120,6 +137,63 @@ class Token
     public function setBlockchainType(string $blockchainType): self
     {
         $this->blockchainType = $blockchainType;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Transaction>
+     */
+    public function getTokenTransactions(): Collection
+    {
+        return $this->tokenTransactions;
+    }
+
+    public function addTokenTransaction(Transaction $tokenTransaction): self
+    {
+        if (!$this->tokenTransactions->contains($tokenTransaction)) {
+            $this->tokenTransactions[] = $tokenTransaction;
+            $tokenTransaction->setToken($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTokenTransaction(Transaction $tokenTransaction): self
+    {
+        if ($this->tokenTransactions->removeElement($tokenTransaction)) {
+            // set the owning side to null (unless already changed)
+            if ($tokenTransaction->getToken() === $this) {
+                $tokenTransaction->setToken(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TokenUser>
+     */
+    public function getTokenUsers(): Collection
+    {
+        return $this->tokenUsers;
+    }
+
+    public function addTokenUser(TokenUser $tokenUser): self
+    {
+        if (!$this->tokenUsers->contains($tokenUser)) {
+            $this->tokenUsers[] = $tokenUser;
+            $tokenUser->addToken($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTokenUser(TokenUser $tokenUser): self
+    {
+        if ($this->tokenUsers->removeElement($tokenUser)) {
+            $tokenUser->removeToken($this);
+        }
 
         return $this;
     }

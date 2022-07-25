@@ -15,8 +15,8 @@
     - ammount
     - fee
     - status
-    - reciever: User
-    - sender: User
+    - reciever: UserToken
+    - sender: UserToken
     - token: Token
     ---
 - User
