@@ -8,15 +8,15 @@
     - rank
     - maxSupply
     - circulatingSupply
-    - ownQuantity
     - blockchainType
     ---
 - Transaction
     - occuredAt
-    - reciever: User
-    - sender: User
     - ammount
     - fee
+    - status
+    - reciever: User
+    - sender: User
     - token: Token
     ---
 - User
@@ -25,11 +25,11 @@
     - createdAt
     - email
     - password
-    - walletAddress
     ---
-- userToken
+- TokenUser
+    - quantity
+    - walletAddress
     - token: Token
     - user: User
-    - quantity
     ---
 
